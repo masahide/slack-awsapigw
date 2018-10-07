@@ -14,7 +14,13 @@ import (
 	"github.com/nlopes/slack/slackevents"
 )
 
-const defaultKMSKey = "kms_data"
+const (
+	defaultKMSKey = "kms_data"
+	// SSKey key name of Signing secret
+	SSKey = "SigningSecret"
+	// TokenKey key name of slack token
+	TokenKey = "Token"
+)
 
 // SlackHanlder config struct
 type SlackHanlder struct {
@@ -123,6 +129,7 @@ func (s *SlackHanlder) Handler(request events.APIGatewayProxyRequest) (events.AP
 			log.Printf("DecryptKMS err:%s", err)
 			return events.APIGatewayProxyResponse{StatusCode: http.StatusInternalServerError}, err
 		}
+		s.SlackSS = GetValue(reqData.KVS, SSKey)
 	}
 	timestamp := GetValue(request.Headers, "X-Slack-Request-Timestamp")
 	signature := GetValue(request.Headers, "X-Slack-Signature")
